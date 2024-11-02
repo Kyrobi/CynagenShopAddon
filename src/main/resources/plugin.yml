@@ -1,0 +1,12 @@
+name: CynagenShopAddon
+version: '${project.version}'
+main: me.kyrobi.cynagenshopsearch.CynagenShopSearch
+api-version: '1.21'
+depend:
+  - QuickShop-Hikari
+  - Essentials
+commands:
+  shop:
+    description: Opens up the shop menu
+  finditem:
+    description: Opens up the shop menu
