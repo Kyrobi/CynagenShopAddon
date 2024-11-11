@@ -19,6 +19,10 @@ import static me.kyrobi.cynagenshopsearch.Util.Utils.*;
 public class ShopTeleportHandler {
 
     public static void onItemClick(InventoryClickEvent event){
+        if(event.getCurrentItem() == null){
+            return;
+        }
+        
         ItemStack item = event.getCurrentItem();
         if(item != null){
             Player player1 = (Player) event.getWhoClicked();
