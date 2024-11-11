@@ -83,7 +83,7 @@ public class BuildInventory {
         ChestGui gui = new ChestGui(6, "Cynagen's e🅱ay Listings");
 
         // Create the paginated pane for content (5 rows)
-        PaginatedPane pages = new PaginatedPane(0, 0, 9, 5);
+        PaginatedPane pages = new PaginatedPane(0, 0, 9, 4);
 
         // Add your items to the 'items' list here
         pages.populateWithItemStacks(items);
@@ -97,7 +97,7 @@ public class BuildInventory {
         gui.addPane(pages);
 
         // Create black glass background for navigation bar
-        OutlinePane background = new OutlinePane(0, 5, 9, 1);
+        OutlinePane background = new OutlinePane(0, 4, 9, 1);
 
         ItemStack borderBlock = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta borderMeta = borderBlock.getItemMeta();
