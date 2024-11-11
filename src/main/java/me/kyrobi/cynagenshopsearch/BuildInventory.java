@@ -216,7 +216,7 @@ public class BuildInventory {
 
             createInventory(this.player, playerShopMode.get(player.getName()), this.itemName, this.metaText);
 
-        }), 7, 0);
+        }), 5, 0);
 
 
         gui.addPane(navigation);

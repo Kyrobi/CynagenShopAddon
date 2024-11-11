@@ -1,7 +1,7 @@
 package me.kyrobi.cynagenshopsearch.view;
 
 import me.kyrobi.cynagenshopsearch.CynagenShopSearch;
-import me.kyrobi.cynagenshopsearch.controller.BuildInventory;
+import me.kyrobi.cynagenshopsearch.BuildInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
