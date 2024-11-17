@@ -141,7 +141,7 @@ public class Utils {
         lore.add(ChatColor.GRAY + "");
         lore.add(ChatColor.GRAY + "------------");
 
-        long lastOnline = ess.getUser(shop.getOwner().getUniqueId()).getLastOnlineActivity();
+        long lastOnline = ess.getUser(shop.getOwner().getUniqueId()).getLastLogout();
         lore.add(ChatColor.GRAY + "Name: " + ChatColor.WHITE + owner);
         lore.add(ChatColor.GRAY + "Last online: " + ChatColor.WHITE + convertMilToHowLongAgo(lastOnline));
         lore.add(ChatColor.GRAY + "Total playtime: " + ChatColor.WHITE + secondsToTimestamp(playTime));
@@ -360,7 +360,10 @@ public class Utils {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) % 60;
 
         // Output the result
-        return(days + " days, " + hours + " hours");
+        String reteurnValue = days + " days, " + hours + " hours";
+        System.out.println("timems: " + timems);
+        System.out.println("Result: " + reteurnValue);
+        return reteurnValue;
     }
 
     public static String secondsToTimestamp(long timeSeconds) {
