@@ -57,7 +57,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.GREEN + "Getting your items... this could take a moment");
         if(args.length >= 1){
 
-            if(Material.getMaterial(args[0]) != null){
+            if(Material.getMaterial(args[0].toUpperCase()) != null){
                 // If first argument is not null, find the item associated containing the meta
                 buildInventory.createInventory(player, BuildInventory.ShopMode.ALL, args[0], metaString);
             } else {
@@ -84,7 +84,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             for (Material material : Material.values()) {
                 String materialName = material.name();
                 // Add material name if it starts with the partial input
-                if (materialName.startsWith(partialInput)) {
+                if (materialName.contains(partialInput.toUpperCase())) {
                     completions.add(materialName);
                 }
             }

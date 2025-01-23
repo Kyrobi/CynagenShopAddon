@@ -5,6 +5,7 @@ api-version: '1.21'
 depend:
   - QuickShop-Hikari
   - Essentials
+  - AdvancedRegionMarket
 commands:
   shop:
     description: Opens up the shop menu

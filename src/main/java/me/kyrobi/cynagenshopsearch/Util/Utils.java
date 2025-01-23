@@ -226,6 +226,11 @@ public class Utils {
         return allShops;
     }
 
+    public static QuickShopAPI getQuickshopAPI(){
+        QuickShopAPI api = QuickShopAPI.getInstance();
+        return api;
+    }
+
     public static Location findSignViewingPosition(Location chestLocation) {
         Block chestBlock = chestLocation.getBlock();
 //        if (!(chestBlock.getState() instanceof Chest) && !(chestBlock.getState() instanceof Barrel)) {

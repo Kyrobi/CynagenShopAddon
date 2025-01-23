@@ -62,6 +62,10 @@
           <id>codemc</id>
           <url>https://repo.codemc.io/repository/maven-public/</url>
       </repository>
+      <repository>
+          <id>alex9849</id>
+          <url>https://nexus.alex9849.net/repository/maven-releases/</url>
+      </repository>
   </repositories>
 
   <dependencies>
@@ -98,6 +102,12 @@
           <groupId>net.essentialsx</groupId>
           <artifactId>EssentialsX</artifactId>
           <version>2.19.1-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>net.alex9849.advancedregionmarket</groupId>
+          <artifactId>advancedregionmarket</artifactId>
+          <version>3.5.3</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
