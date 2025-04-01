@@ -1,6 +1,6 @@
 package me.kyrobi.cynagenshopsearch.logging;
 
-import com.ghostchu.quickshop.api.event.ShopPurchaseEvent;
+import com.ghostchu.quickshop.api.event.economy.ShopPurchaseEvent;
 import me.kyrobi.cynagenshopsearch.CynagenShopSearch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +22,7 @@ public class ShopEvents implements Listener {
         String item = e.getShop().getItem().getType().name();
         double price = e.getShop().getPrice();
         int amount = e.getAmount();
-        insert(uuid, username, item, price, amount);
+        String type = e.getShop().getShopType().name();
+        insert(uuid, username, item, price, amount, type);
     }
 }

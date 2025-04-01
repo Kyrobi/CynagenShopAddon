@@ -7,7 +7,5 @@ depend:
   - Essentials
   - AdvancedRegionMarket
 commands:
-  shop:
-    description: Opens up the shop menu
   finditem:
     description: Opens up the shop menu

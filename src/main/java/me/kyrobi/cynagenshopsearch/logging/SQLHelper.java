@@ -25,7 +25,8 @@ public class SQLHelper {
                 username TEXT NOT NULL,
                 item TEXT NOT NULL,
                 price REAL NOT NULL,
-                amount INTEGER NOT NULL
+                amount INTEGER NOT NULL,
+                type TEXT NOT NULL
             );
             """;
 
@@ -37,7 +38,8 @@ public class SQLHelper {
                 username TEXT NOT NULL,
                 item TEXT NOT NULL,
                 price REAL NOT NULL,
-                amount INTEGER NOT NULL
+                amount INTEGER NOT NULL,
+                type TEXT NOT NULL
             );
             """;
 
@@ -61,10 +63,10 @@ public class SQLHelper {
         }
     }
 
-    public static void insert(String uuid, String username, String item, double price, int amount){
+    public static void insert(String uuid, String username, String item, double price, int amount, String type){
 
-        String sqlcommand = "INSERT INTO purchases (time, uuid, username, item, price, amount) " +
-                "VALUES (?, ?, ?, ?, ?, ?);";
+        String sqlcommand = "INSERT INTO purchases (time, uuid, username, item, price, amount, type) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?);";
 
         try(Connection conn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH)){
             PreparedStatement stmt = conn.prepareStatement(sqlcommand);
@@ -74,6 +76,7 @@ public class SQLHelper {
             stmt.setString(4, item);
             stmt.setDouble(5, price);
             stmt.setInt(6, amount);
+            stmt.setString(7, type);
             stmt.executeUpdate();
             conn.close();
         }
@@ -82,13 +85,13 @@ public class SQLHelper {
         }
     }
 
-    public static void bulkInsert(List<String> uuid, List<String> username, List<String> item, List<Double> price, List<Integer> amount){
+    public static void bulkInsert(List<String> uuid, List<String> username, List<String> item, List<Double> price, List<Integer> amount, List<String> type){
         try(Connection conn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH)){
             // PreparedStatement update = conn.prepareStatement("UPDATE stats SET time = ? WHERE userID = ? AND serverID = ?");
 
             PreparedStatement updateOrInsertStatement = conn.prepareStatement(
-                    "INSERT INTO listings (time, uuid, username, item, price, amount) " +
-                            "VALUES (?, ?, ?, ?, ?, ?);"
+                    "INSERT INTO listings (time, uuid, username, item, price, amount, type) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?);"
             );
 
             // Disable auto-commit to enable batch processing
@@ -102,6 +105,7 @@ public class SQLHelper {
                 String _item = item.get(i);
                 double _price = price.get(i);
                 int _amount = amount.get(i);
+                String _type = type.get(i);
 
                 updateOrInsertStatement.setLong(1, System.currentTimeMillis());
                 updateOrInsertStatement.setString(2, _uuid);
@@ -109,6 +113,7 @@ public class SQLHelper {
                 updateOrInsertStatement.setString(4, _item);
                 updateOrInsertStatement.setDouble(5, _price);
                 updateOrInsertStatement.setInt(6, _amount);
+                updateOrInsertStatement.setString(7, _type);
                 updateOrInsertStatement.addBatch();
             }
 

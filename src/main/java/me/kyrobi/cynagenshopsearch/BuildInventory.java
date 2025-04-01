@@ -188,11 +188,11 @@ public class BuildInventory {
             lore.add(ChatColor.GRAY + spacing + "Selling");
         }
         lore.add(ChatColor.GRAY + "   ---------");
-        if(mode == ShopMode.SERVICES){
-            lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "-> " + "Job Listing");
-        } else {
-            lore.add(ChatColor.GRAY + spacing + "Job Listing");
-        }
+//        if(mode == ShopMode.SERVICES){
+//            lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "-> " + "Job Listing");
+//        } else {
+//            lore.add(ChatColor.GRAY + spacing + "Job Listing");
+//        }
 
         modeMeta.setLore(lore);
         modeButton.setItemMeta(modeMeta);
@@ -208,11 +208,11 @@ public class BuildInventory {
                 playerShopMode.put(player.getName(), ShopMode.SELL);
             }
             else if(mode == ShopMode.SELL){
-                playerShopMode.put(player.getName(), ShopMode.SERVICES);
-            }
-            else if(mode == ShopMode.SERVICES){
                 playerShopMode.put(player.getName(), ShopMode.ALL);
             }
+//            else if(mode == ShopMode.SERVICES){
+//                playerShopMode.put(player.getName(), ShopMode.ALL);
+//            }
 
             createInventory(this.player, playerShopMode.get(player.getName()), this.itemName, this.metaText);
 

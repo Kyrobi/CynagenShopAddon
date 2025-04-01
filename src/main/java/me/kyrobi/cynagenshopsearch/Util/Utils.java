@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.getInstance;
+import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.shopCommand;
 
 public class Utils {
 
@@ -286,26 +287,26 @@ public class Utils {
     public static List<String> getTutorialBookLore(ItemMeta meta){
         List<String> lore = new ArrayList<>();
 
-        lore.add(ChatColor.AQUA + "/shop");
+        lore.add(ChatColor.AQUA + shopCommand);
         lore.add(ChatColor.WHITE + "This will open the shop menu");
         lore.add(ChatColor.WHITE + "and show all items.");
 
         lore.add("");
 
-        lore.add(ChatColor.AQUA + "/shop ENCHANTED_BOOK");
+        lore.add(ChatColor.AQUA + shopCommand + " ENCHANTED_BOOK");
         lore.add(ChatColor.WHITE + "This will find shops with");
         lore.add(ChatColor.WHITE + "enchanted books.");
 
         lore.add("");
 
-        lore.add(ChatColor.AQUA + "/shop ENCHANTED_BOOK fortune");
+        lore.add(ChatColor.AQUA + shopCommand + " ENCHANTED_BOOK fortune");
         lore.add(ChatColor.WHITE + "This will find shops with");
         lore.add(ChatColor.WHITE + "enchanted books that contains");
         lore.add(ChatColor.WHITE + "the text \"fortune\".");
 
         lore.add("");
 
-        lore.add(ChatColor.AQUA + "/shop voting item");
+        lore.add(ChatColor.AQUA + shopCommand + " voting item");
         lore.add(ChatColor.WHITE + "This will find all items containing");
         lore.add(ChatColor.WHITE + "the word \"voting item\".");
 

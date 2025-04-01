@@ -1,6 +1,5 @@
 package me.kyrobi.cynagenshopsearch;
 
-import com.ghostchu.quickshop.api.event.ShopPurchaseEvent;
 import com.ghostchu.quickshop.api.shop.Shop;
 import net.alex9849.arm.events.RemoveRegionEvent;
 import net.alex9849.arm.events.RestoreRegionEvent;

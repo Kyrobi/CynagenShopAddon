@@ -24,7 +24,7 @@ import static me.kyrobi.cynagenshopsearch.logging.SQLHelper.initialize;
 
 public final class CynagenShopSearch extends JavaPlugin {
 
-    public static final String shopCommand = "shop";
+    public static final String shopCommand = "/finditem";
     private static CynagenShopSearch instance;
 
     @Override
@@ -34,8 +34,8 @@ public final class CynagenShopSearch extends JavaPlugin {
 
         initialize(); // Init the logging database
 
-        this.getCommand(shopCommand).setExecutor((CommandExecutor)new ShopCommand(this));
-        this.getCommand("finditem").setExecutor((CommandExecutor)new FindItemOverride());
+        this.getCommand("finditem").setExecutor((CommandExecutor)new ShopCommand(this));
+        // this.getCommand("finditem").setExecutor((CommandExecutor)new FindItemOverride());
 
         Bukkit.getScheduler().runTaskLater(this, ()->{
             ArrayList<Shop> shops = getAllShops();
@@ -46,6 +46,7 @@ public final class CynagenShopSearch extends JavaPlugin {
             List<String> item = new ArrayList<>();
             List<Double> price = new ArrayList<>();
             List<Integer> amount = new ArrayList<>();
+            List<String> type = new ArrayList<>();
 
             for(Shop shop: shops){
                 if(shop.isUnlimited()){
@@ -57,10 +58,11 @@ public final class CynagenShopSearch extends JavaPlugin {
                 item.add(shop.getItem().getType().name());
                 price.add(shop.getPrice());
                 amount.add(shop.getRemainingStock());
+                type.add(shop.getShopType().name());
 
             }
 
-            bulkInsert(uuid, username, item, price, amount);
+            bulkInsert(uuid, username, item, price, amount, type);
         }, 20 * 10);
 
         new ShopEvents(this);
