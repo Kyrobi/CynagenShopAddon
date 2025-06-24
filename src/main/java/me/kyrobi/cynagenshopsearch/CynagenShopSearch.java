@@ -56,8 +56,8 @@ public final class CynagenShopSearch extends JavaPlugin {
                 uuid.add(shop.getOwner().getUniqueId().toString());
                 username.add(shop.getOwner().getUsername());
                 item.add(shop.getItem().getType().name());
-                price.add(shop.getPrice());
-                amount.add(shop.getRemainingStock());
+                price.add(Double.valueOf(shop.getPrice()));
+                amount.add(Integer.valueOf(shop.getRemainingStock()));
                 type.add(shop.getShopType().name());
 
             }
@@ -67,6 +67,7 @@ public final class CynagenShopSearch extends JavaPlugin {
 
         new ShopEvents(this);
         new CleanupShops(this);
+        new AutoBuy(this);
     }
 
     @Override

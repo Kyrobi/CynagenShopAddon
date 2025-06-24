@@ -66,6 +66,10 @@
           <id>alex9849</id>
           <url>https://nexus.alex9849.net/repository/maven-releases/</url>
       </repository>
+      <repository>
+          <id>Scarsz-Nexus</id>
+          <url>https://nexus.scarsz.me/content/groups/public/</url>
+      </repository>
   </repositories>
 
   <dependencies>
@@ -108,6 +112,12 @@
           <groupId>net.alex9849.advancedregionmarket</groupId>
           <artifactId>advancedregionmarket</artifactId>
           <version>3.5.3</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.discordsrv</groupId>
+          <artifactId>discordsrv</artifactId>
+          <version>1.28.0</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
