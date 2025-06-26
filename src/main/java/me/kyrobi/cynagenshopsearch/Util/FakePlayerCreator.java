@@ -21,11 +21,11 @@ Fully AI generated code LOL
 
 public class FakePlayerCreator {
 
-    public static Player createFakePlayerWithInventory(String name) {
-        return createFakePlayerWithInventory(name, false);
+    public static Player createFakePlayer(String name) {
+        return createFakePlayer(name, false);
     }
 
-    public static Player createFakePlayerWithInventory(String name, boolean debug) {
+    public static Player createFakePlayer(String name, boolean debug) {
         // Create a fake inventory with more space
         Inventory fakeInventory = Bukkit.createInventory(null, 36, name + "'s Inventory");
 
@@ -73,21 +73,18 @@ public class FakePlayerCreator {
                     return inventory;
                 case "isOnline":
                     return true;
+                case "isOp":
+                    return true;
                 case "hasPermission":
-                    // Grant specific permissions that might be needed
-                    if (args != null && args.length > 0) {
-                        String permission = (String) args[0];
-                        if (debug) {
-                            System.out.println("Permission check: " + permission);
-                        }
-                        // Grant permissions that are typically needed for shop interactions
-                        if (permission.contains("quickshop.other.use") ||
-                                permission.contains("quickshop.buy") ||
-                                permission.contains("quickshop.use")) {
-                            return true;
-                        }
+                    if (debug && args != null && args.length > 0) {
+                        System.out.println("Permission granted: " + args[0]);
                     }
                     return true; // Default to true for fake player
+                case "addPermission":
+                case "removePermission":
+                    return null; // Silently accept permission changes
+                case "isPermissionSet":
+                    return true; // All permissions are "set" to true
                 case "sendMessage":
                     if (debug && args != null && args.length > 0) {
                         System.out.println("Message to fake player: " + args[0]);
@@ -123,7 +120,7 @@ public class FakePlayerCreator {
                 case "getGameMode":
                     return org.bukkit.GameMode.SURVIVAL;
                 case "getLocale":
-                    return "en_us";
+                     return "en_us";
                 case "Locale":
                     return java.util.Locale.ENGLISH;
                 default:

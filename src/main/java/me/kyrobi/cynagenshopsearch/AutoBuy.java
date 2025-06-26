@@ -11,14 +11,17 @@ import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Info;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.ShopAction;
+import com.ghostchu.quickshop.api.shop.ShopManager;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.obj.QUserImpl;
 import com.ghostchu.quickshop.shop.SimpleInfo;
+import com.ghostchu.quickshop.shop.SimpleShopManager;
 import com.ghostchu.quickshop.shop.inventory.BukkitInventoryWrapper;
 import com.ghostchu.quickshop.util.Util;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel;
 import github.scarsz.discordsrv.util.DiscordUtil;
 import me.kyrobi.cynagenshopsearch.Util.FakePlayerCreator;
+import net.ess3.api.MaxMoneyException;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,6 +34,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.util.*;
@@ -43,7 +47,6 @@ public class AutoBuy implements Listener, CommandExecutor {
 
     private CynagenShopSearch plugin;
     private QuickShopAPI quickShopAPI;
-    private ArrayList<Shop> allShops;
 
     private final Map<Material, Double> itemPrices = new HashMap<>();
 
@@ -60,7 +63,6 @@ public class AutoBuy implements Listener, CommandExecutor {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         quickShopAPI = getQuickshopAPI();
-        allShops = getAllShops();
 
         this.enabled = plugin.getConfig().getBoolean("auto-buy-feature.enabled");
         this.loggingDiscordChannel = plugin.getConfig().getString("auto-buy-feature.discord_logging_channel_id");
@@ -136,12 +138,12 @@ public class AutoBuy implements Listener, CommandExecutor {
         List<String> names = new ArrayList<>();
         Random random = new Random();
 
-        for(Shop shop: allShops){
+        for(Shop shop: getAllShops()){
 
-//            if(shop.getOwner().getUsername().equals("Kyrobi") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
-//            } else {
-//                continue;
-//            }
+            if(shop.getOwner().getUsername().equals("Kyrobi") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
+            } else {
+                continue;
+            }
 
             String ownerName = shop.getOwner().getUsername();
             if(!playerShops.containsKey(ownerName)){
@@ -252,7 +254,7 @@ public class AutoBuy implements Listener, CommandExecutor {
                 currentMoneySpent += price * amountPossibleToBuy;
 
                 // Perform the purchase
-                buyFromShop(shop, amountPossibleToBuy);
+                buyFromShop(shop, itemStack, amountPossibleToBuy);
 
                 stringBuilder.append("Bought " + amountPossibleToBuy + "x " + itemType +
                         "\nTotal: $" + String.format("%.2f", (price * amountPossibleToBuy)) +
@@ -260,8 +262,16 @@ public class AutoBuy implements Listener, CommandExecutor {
 
             }
 
+            double tax = 0;
+            Object taxConfig = QuickShop.getInstance().getConfig().get("tax");
+            if(taxConfig != null){
+                tax = (double) taxConfig;
+            }
+
             stringBuilder.append("-----\n");
-            stringBuilder.append("Total spent: $" + String.format("%.2f", currentMoneySpent) + "\n");
+            stringBuilder.append("Total server spent: $" + String.format("%.2f", currentMoneySpent) + "\n");
+            stringBuilder.append("Total player received: $" + String.format("%.2f", (currentMoneySpent * (1 - tax))) + "\n");
+            stringBuilder.append("Tax Paid: $" + String.format("%.2f", (currentMoneySpent - (currentMoneySpent * (1 - tax)))) + "\n");
             stringBuilder.append("Total items: " + currentItemsPurchased + "\n");
             stringBuilder.append("```");
             if(currentItemsPurchased > 0){
@@ -271,25 +281,76 @@ public class AutoBuy implements Listener, CommandExecutor {
 
     }
 
-    private void buyFromShop(Shop shop, int amount){
-        Player fakePlayer = FakePlayerCreator.createFakePlayerWithInventory("Pekomart");
-        InventoryWrapper inventoryWrapper = new BukkitInventoryWrapper(fakePlayer.getInventory());
-        AbstractEconomy economy = QuickShop.getInstance().getEconomy();
-        Info info = new SimpleInfo(shop.getLocation(), ShopAction.PURCHASE_BUY, shop.getItem(), null, shop, false);
+    private void buyFromShop(Shop shop, ItemStack itemStack, int amount){
+//        Player fakePlayer = FakePlayerCreator.createFakePlayer("Pekomart");
+//        InventoryWrapper inventoryWrapper = new BukkitInventoryWrapper(fakePlayer.getInventory());
+//        AbstractEconomy economy = QuickShop.getInstance().getEconomy();
+//        Info info = new SimpleInfo(shop.getLocation(), ShopAction.PURCHASE_BUY, shop.getItem(), null, shop, false);
 
-        getQuickshopAPI().getShopManager().actionSelling(
-                fakePlayer,
-                inventoryWrapper,
-                economy,
-                info,
-                shop,
-                amount
-        );
+//        System.out.println("Calling action buy");
+//        Object result = getQuickshopAPI().getShopManager().actionSelling(
+//                fakePlayer,
+//                inventoryWrapper,
+//                economy,
+//                info,
+//                shop,
+//                amount
+//        );
+//
+//        System.out.println(result);
+
+        double tax = 0;
+        Object taxConfig = QuickShop.getInstance().getConfig().get("tax");
+        if(taxConfig != null){
+            tax = (double) taxConfig;
+        }
+
+        if(shop.getRemainingStock() >= amount){
+
+            double totalPretax = shop.getPrice() * amount;
+            double totalPostTax = totalPretax * (1 - tax);
+
+            shop.remove(itemStack, amount);
+
+            try{
+                QuickShop.getInstance().getEconomy().deposit(shop.getOwner(), totalPostTax, Bukkit.getWorld("world"), QuickShop.getInstance().getCurrency());
+                // getEssentialsAPI().getUser(shop.getOwner().getUniqueId()).giveMoney(new BigDecimal(totalPostTax));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            notifyBought(shop.getOwner(), shop, amount, shop.getRemainingStock(), totalPretax-totalPostTax, totalPretax);
+        }
     }
 
     private void logInfo(String message){
         TextChannel textChannel = DiscordUtil.getTextChannelById(loggingDiscordChannel);
         DiscordUtil.sendMessage(textChannel, message);
+    }
+
+    public void notifyBought(QUser seller, Shop shop, int amount, int stock, double tax, double total) {
+        try {
+            // Create SimpleShopManager or get from plugin if available
+            ShopManager genericManager = getQuickshopAPI().getShopManager();
+            SimpleShopManager manager = (SimpleShopManager) genericManager;
+
+            // Get the private method
+            Method notifyBought = SimpleShopManager.class.getDeclaredMethod(
+                    "notifyBought",
+                    QUser.class,
+                    Shop.class,
+                    int.class,
+                    int.class,
+                    double.class,
+                    double.class
+            );
+            notifyBought.setAccessible(true);
+
+            // Call the method with all arguments
+            notifyBought.invoke(manager, seller, shop, amount, stock, tax, total);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
