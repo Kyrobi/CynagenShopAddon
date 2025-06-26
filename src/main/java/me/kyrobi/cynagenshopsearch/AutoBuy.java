@@ -140,7 +140,7 @@ public class AutoBuy implements Listener, CommandExecutor {
 
         for(Shop shop: getAllShops()){
 
-            if(shop.getOwner().getUsername().equals("Kyrobi") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
+            if(shop.getOwner().getUsername().equals("KingOfMissouri") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
             } else {
                 continue;
             }
@@ -319,7 +319,9 @@ public class AutoBuy implements Listener, CommandExecutor {
                 throw new RuntimeException(e);
             }
 
-            notifyBought(shop.getOwner(), shop, amount, shop.getRemainingStock(), totalPretax-totalPostTax, totalPretax);
+            Player fakePlayer = FakePlayerCreator.createFakePlayer("Pekomart");
+            QUser user = QUserImpl.createFullFilled(fakePlayer);
+            notifyBought(user, shop, amount, shop.getRemainingStock(), totalPretax-totalPostTax, totalPretax);
         }
     }
 
