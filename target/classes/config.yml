@@ -1,6 +1,6 @@
 auto-buy-feature:
   enabled: true
-  discord_logging_channel_id: "1268264904888942635"
+  discord_logging_channel_id: "1387875600466841760"
   price_threshold_percentage: 20
   max_players_to_buy_from: 30
   max_money_to_spend_per_player: 300

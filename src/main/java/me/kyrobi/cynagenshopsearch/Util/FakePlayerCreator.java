@@ -123,6 +123,8 @@ public class FakePlayerCreator {
                 case "getGameMode":
                     return org.bukkit.GameMode.SURVIVAL;
                 case "getLocale":
+                    return "en_us";
+                case "Locale":
                     return java.util.Locale.ENGLISH;
                 default:
                     // Handle return types

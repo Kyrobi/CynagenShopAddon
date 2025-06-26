@@ -138,10 +138,10 @@ public class AutoBuy implements Listener, CommandExecutor {
 
         for(Shop shop: allShops){
 
-            if(shop.getOwner().getUsername().equals("Kyrobi") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
-            } else {
-                continue;
-            }
+//            if(shop.getOwner().getUsername().equals("Kyrobi") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
+//            } else {
+//                continue;
+//            }
 
             String ownerName = shop.getOwner().getUsername();
             if(!playerShops.containsKey(ownerName)){
@@ -209,42 +209,64 @@ public class AutoBuy implements Listener, CommandExecutor {
                 - The server has not spent over it's allocated money
                 - The server hasn't bought the max defined amount of items yet
                  */
-                if( (price <= (willBuyPrice)) && ((currentMoneySpent) <= maxMoneyToSpendPerPlayer) && (currentItemsPurchased <= maxAmountToBuyPerPlayer) ){
-                    int amountToBuy = Math.min(random.nextInt(maxAmountToBuyPerPlayer) + 1, stock);
-                    int amountPossibleToBuy = 0;
 
-                    /*
-                    It's possible that the randomly generated number for amount to buy means the server
-                    will spend over its budget. Just to be sure, we keep counting down until amount * price is less
-                    than the total budget.
-                     */
-                    for(int i = amountToBuy;; i--){
-                        if((amountToBuy * price) > maxAmountToBuyPerPlayer){
-                            continue;
-                        } else {
-                            amountPossibleToBuy = amountToBuy;
-                            break;
-                        }
-                    }
-                    currentItemsPurchased += amountPossibleToBuy;
-                    currentMoneySpent += price * amountPossibleToBuy;
-
-
-                    buyFromShop(shop, amountPossibleToBuy);
-
-                    stringBuilder.append("Bought " + amountPossibleToBuy + "x " + itemType + "\nTotal: $" + String.format("%.2f", (price * amountPossibleToBuy)) + " ($" + price + " each)\n\n");
-
-                } else {
-                    // Can no longer buy from this player and all of their shops. Move onto the next player
-                    break;
+                if(price > willBuyPrice){
+                    continue;
                 }
+
+                // Calculate remaining budget and capacity
+                double remainingBudget = maxMoneyToSpendPerPlayer - currentMoneySpent;
+                int remainingItemCapacity = maxAmountToBuyPerPlayer - currentItemsPurchased;
+
+                // Check if we've reached our limits
+                if(remainingBudget <= 0 || remainingItemCapacity <= 0) {
+                    break; // Can't buy any more from this player
+                }
+
+                // Calculate how much we can actually buy
+                int amountToBuy = Math.min(random.nextInt(maxAmountToBuyPerPlayer) + 1, stock);
+                int amountPossibleToBuy = amountToBuy;
+
+                // Make sure we don't exceed budget
+                if (amountPossibleToBuy * price > remainingBudget) {
+                    amountPossibleToBuy = (int) Math.floor(remainingBudget / price);
+                }
+
+                // Make sure we don't exceed item limit
+                if (amountPossibleToBuy > remainingItemCapacity) {
+                    amountPossibleToBuy = remainingItemCapacity;
+                }
+
+                // Make sure we don't buy more than available stock
+                if (amountPossibleToBuy > stock) {
+                    amountPossibleToBuy = stock;
+                }
+
+                // Make sure we're not trying to buy 0 or negative items
+                if (amountPossibleToBuy <= 0) {
+                    continue; // Skip this shop
+                }
+
+                // Update counters
+                currentItemsPurchased += amountPossibleToBuy;
+                currentMoneySpent += price * amountPossibleToBuy;
+
+                // Perform the purchase
+                buyFromShop(shop, amountPossibleToBuy);
+
+                stringBuilder.append("Bought " + amountPossibleToBuy + "x " + itemType +
+                        "\nTotal: $" + String.format("%.2f", (price * amountPossibleToBuy)) +
+                        " ($" + price + " each)\n\n");
 
             }
 
+            stringBuilder.append("-----\n");
             stringBuilder.append("Total spent: $" + String.format("%.2f", currentMoneySpent) + "\n");
             stringBuilder.append("Total items: " + currentItemsPurchased + "\n");
             stringBuilder.append("```");
-            logInfo(stringBuilder.toString());
+            if(currentItemsPurchased > 0){
+                logInfo(stringBuilder.toString());
+            }
         }
 
     }
