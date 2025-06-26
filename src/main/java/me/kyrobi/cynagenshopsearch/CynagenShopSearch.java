@@ -35,6 +35,8 @@ public final class CynagenShopSearch extends JavaPlugin {
         initialize(); // Init the logging database
 
         this.getCommand("finditem").setExecutor((CommandExecutor)new ShopCommand(this));
+        this.getCommand("shopautobuy").setExecutor((CommandExecutor)new AutoBuy(this));
+
         // this.getCommand("finditem").setExecutor((CommandExecutor)new FindItemOverride());
 
         Bukkit.getScheduler().runTaskLater(this, ()->{

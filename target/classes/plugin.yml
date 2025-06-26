@@ -9,3 +9,7 @@ depend:
 commands:
   finditem:
     description: Opens up the shop menu
+  shopautobuy:
+    description: Automatically buys items from player shops.
+    permission: cynagenshopaddon.autobuy
+    permission-message: You do not have permission to use this command.

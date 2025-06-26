@@ -1,7 +1,8 @@
 auto-buy-feature:
   enabled: true
+  discord_logging_channel_id: "1268264904888942635"
   price_threshold_percentage: 20
-  max_player_to_buy_from: 30
+  max_players_to_buy_from: 30
   max_money_to_spend_per_player: 300
   max_amount_to_buy_per_player: 64
   prices:
