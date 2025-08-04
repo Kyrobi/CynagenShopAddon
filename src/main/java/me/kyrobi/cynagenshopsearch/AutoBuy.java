@@ -138,12 +138,23 @@ public class AutoBuy implements Listener, CommandExecutor {
         List<String> names = new ArrayList<>();
         Random random = new Random();
 
+        double totalMoneySpent = 0;
+        double totalItemsBought = 0;
+
         for(Shop shop: getAllShops()){
 
-            if(shop.getOwner().getUsername().equals("KingOfMissouri") && (shop.getRemainingStock() > 0) && (shop.isSelling())){
-            } else {
+            if (shop.getRemainingStock() <= 0) {
                 continue;
             }
+            if (!shop.isSelling()) {
+                continue;
+            }
+
+//            if(shop.getOwner().getUsername().equals("Kyrobi")){
+//
+//            } else {
+//                continue;
+//            }
 
             String ownerName = shop.getOwner().getUsername();
             if(!playerShops.containsKey(ownerName)){
@@ -195,6 +206,12 @@ public class AutoBuy implements Listener, CommandExecutor {
                 if(itemMeta != null && itemStack.getItemMeta().hasLore()){
                     continue;
                 }
+
+                // Don't buy renamed items - example, someone selling paper as token
+                if(isRenamed(itemStack)){
+                    continue;
+                }
+
 
                 Material itemType = shop.getItem().getType();
                 Double recommendedPrice = itemPrices.getOrDefault(itemType, -1D);
@@ -253,6 +270,9 @@ public class AutoBuy implements Listener, CommandExecutor {
                 currentItemsPurchased += amountPossibleToBuy;
                 currentMoneySpent += price * amountPossibleToBuy;
 
+                totalMoneySpent += price * amountPossibleToBuy;
+                totalItemsBought += amountPossibleToBuy;
+
                 // Perform the purchase
                 buyFromShop(shop, itemStack, amountPossibleToBuy);
 
@@ -278,6 +298,11 @@ public class AutoBuy implements Listener, CommandExecutor {
                 logInfo(stringBuilder.toString());
             }
         }
+
+        StringBuilder stringBuilder1 = new StringBuilder();
+        stringBuilder1.append("Price For All Items: " + String.format("%.2f", totalMoneySpent) + "\n");
+        stringBuilder1.append("Total Items Bought: " + String.format("%.2f", totalItemsBought));
+        logInfo(stringBuilder1.toString());
 
     }
 
@@ -305,6 +330,7 @@ public class AutoBuy implements Listener, CommandExecutor {
             tax = (double) taxConfig;
         }
 
+
         if(shop.getRemainingStock() >= amount){
 
             double totalPretax = shop.getPrice() * amount;
@@ -323,6 +349,15 @@ public class AutoBuy implements Listener, CommandExecutor {
             QUser user = QUserImpl.createFullFilled(fakePlayer);
             notifyBought(user, shop, amount, shop.getRemainingStock(), totalPretax-totalPostTax, totalPretax);
         }
+    }
+
+    public boolean isRenamed(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+
+        return meta.hasDisplayName();
     }
 
     private void logInfo(String message){

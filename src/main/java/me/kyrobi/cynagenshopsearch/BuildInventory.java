@@ -82,6 +82,14 @@ public class BuildInventory {
         // Create the main GUI with 6 rows
         ChestGui gui = new ChestGui(6, "Cynagen's e🅱ay Listings");
 
+        gui.setOnGlobalClick(inventoryClickEvent -> {
+            inventoryClickEvent.setCancelled(true);
+        });
+
+        gui.setOnGlobalDrag(inventoryDragEvent -> {
+            inventoryDragEvent.setCancelled(true);
+        });
+
         // Create the paginated pane for content (5 rows)
         PaginatedPane pages = new PaginatedPane(0, 0, 9, 4);
 
@@ -93,6 +101,7 @@ public class BuildInventory {
             event.setCancelled(true);
             onItemClick(event);
         });
+
 
         gui.addPane(pages);
 
