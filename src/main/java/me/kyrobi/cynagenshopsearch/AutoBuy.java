@@ -361,8 +361,8 @@ public class AutoBuy implements Listener, CommandExecutor {
     }
 
     private void logInfo(String message){
-        TextChannel textChannel = DiscordUtil.getTextChannelById(loggingDiscordChannel);
-        DiscordUtil.sendMessage(textChannel, message);
+//        TextChannel textChannel = DiscordUtil.getTextChannelById(loggingDiscordChannel);
+//        DiscordUtil.sendMessage(textChannel, message);
     }
 
     public void notifyBought(QUser seller, Shop shop, int amount, int stock, double tax, double total) {
