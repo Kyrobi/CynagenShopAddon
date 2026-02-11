@@ -40,9 +40,9 @@ public class ShopTeleportHandler {
 
             player1.closeInventory();
 
-            World world = Bukkit.getWorld("Testworld");
+            World world = finalLocation.getWorld();
             if(world != null){
-                world.getChunkAt(loc).load();
+                world.getChunkAt(finalLocation).load();
 
                 Bukkit.getScheduler().runTaskLater(getInstance(), ()->{
                     setGlowing(loc, player1);
