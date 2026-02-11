@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.kyrobi.shopsearch.CynagenShopSearch.SHOP_LOADING_MESSAGE;
+
 public class ShopCommand implements CommandExecutor, TabCompleter {
 
     private CynagenShopSearch plugin;
@@ -54,7 +56,10 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         // Remove trailing whitespaces
         String metaString = metaText.toString().replaceFirst("\\s++$", "");
 
-        player.sendMessage(ChatColor.GREEN + "Getting your items... this could take a moment");
+        if(!SHOP_LOADING_MESSAGE.isEmpty()){
+            player.sendMessage(SHOP_LOADING_MESSAGE);
+        }
+
         if(args.length >= 1){
 
             if(Material.getMaterial(args[0].toUpperCase()) != null){

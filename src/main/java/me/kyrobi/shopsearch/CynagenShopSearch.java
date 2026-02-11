@@ -34,6 +34,8 @@ public final class CynagenShopSearch extends JavaPlugin {
     public static String SHOP_TYPE_GUIDE_TEXT = "";
     public static String SHOP_TYPE_GUIDE_ITEM = "";
 
+    public static String SHOP_LOADING_MESSAGE = "";
+
     public static boolean SHOULD_RANDOMIZE = false;
 
     @Override
@@ -62,7 +64,7 @@ public final class CynagenShopSearch extends JavaPlugin {
 
         SHOULD_RANDOMIZE = this.getConfig().getBoolean("randomize-listing");
 
-
+        SHOP_LOADING_MESSAGE = getConfigValueString("loading-message");
     }
 
     @Override

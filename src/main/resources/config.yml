@@ -31,3 +31,6 @@ shop-type-guide-item: "COMPARATOR"
 # Randomize the listings each time a user does /finditem
 # instead of being ordered each time by date.
 randomize-listing: true
+
+# Leave empty to disable
+loading-message: "&aGetting your items... this could take a moment"
