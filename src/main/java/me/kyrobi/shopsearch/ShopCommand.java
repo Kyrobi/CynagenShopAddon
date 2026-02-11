@@ -1,7 +1,5 @@
-package me.kyrobi.cynagenshopsearch.view;
+package me.kyrobi.shopsearch;
 
-import me.kyrobi.cynagenshopsearch.CynagenShopSearch;
-import me.kyrobi.cynagenshopsearch.BuildInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -9,14 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.shopCommand;
 
 public class ShopCommand implements CommandExecutor, TabCompleter {
 
@@ -34,13 +27,13 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         }
 
 
-        System.out.println("Using command");
+        // System.out.println("Using command");
         Player player = (Player) commandSender;
-        System.out.println("For " + player.getName());
+        // System.out.println("For " + player.getName());
 
-        if(!player.getName().equals("Mokokotei")){
-            return true;
-        }
+//        if(!player.getName().equals("Mokokotei")){
+//            return true;
+//        }
 
         BuildInventory buildInventory = new BuildInventory(plugin);
 
@@ -64,7 +57,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.GREEN + "Getting your items... this could take a moment");
         if(args.length >= 1){
 
-            if(Material.getMaterial(args[0]) != null){
+            if(Material.getMaterial(args[0].toUpperCase()) != null){
                 // If first argument is not null, find the item associated containing the meta
                 buildInventory.createInventory(player, BuildInventory.ShopMode.ALL, args[0], metaString);
             } else {
@@ -91,7 +84,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             for (Material material : Material.values()) {
                 String materialName = material.name();
                 // Add material name if it starts with the partial input
-                if (materialName.startsWith(partialInput)) {
+                if (materialName.contains(partialInput.toUpperCase())) {
                     completions.add(materialName);
                 }
             }

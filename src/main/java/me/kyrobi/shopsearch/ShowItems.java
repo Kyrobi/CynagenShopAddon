@@ -1,4 +1,4 @@
-package me.kyrobi.cynagenshopsearch;
+package me.kyrobi.shopsearch;
 
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.ShopType;
@@ -12,11 +12,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.getInstance;
-import static me.kyrobi.cynagenshopsearch.Util.Utils.*;
+import static me.kyrobi.shopsearch.CynagenShopSearch.SHOULD_RANDOMIZE;
+import static me.kyrobi.shopsearch.CynagenShopSearch.getInstance;
+import static me.kyrobi.shopsearch.Util.Utils.*;
 
 public class ShowItems {
 
@@ -29,40 +31,6 @@ public class ShowItems {
         List<ItemStack> items = new ArrayList<>();
 
         List<Shop> copyOfShops = new ArrayList<>(getAllShops());
-
-
-
-        // Put all the service listings
-        if(mode == BuildInventory.ShopMode.SERVICES){
-            List<Shop> servicesShop = new ArrayList<>();
-            for(Shop shop: copyOfShops){
-                ItemStack item = shop.getItem();
-                String name = item.getItemMeta().getDisplayName();
-                if(name.startsWith("[Service]")){
-                    servicesShop.add(shop);
-                }
-            }
-
-            for(Shop shop: servicesShop){
-                String name = shop.getItem().getItemMeta().getDisplayName();
-                String description = name.replaceFirst("\\[Service\\]\\s*", "");
-                ItemStack itemEdited = addDescriptionToService(shop, description);
-                items.add(itemEdited);
-            }
-
-            servicesShop.sort(Comparator.comparingLong(shop -> {
-                Player player = (Player) Bukkit.getOfflinePlayer(shop.getOwner().getUniqueId());
-                if (player != null) {
-                    // Use PLAY_ONE_MINUTE statistic as last_online
-                    return player.getStatistic(Statistic.PLAY_ONE_MINUTE);
-                } else {
-                    // Return a high value or a default if player is null
-                    return Long.MAX_VALUE;
-                }
-            }));
-
-            return items;
-        }
 
 
         /*
@@ -186,7 +154,12 @@ public class ShowItems {
                 Since we don't care about the price for this mode, we sort it by the time the item
                 was added onto the market
                  */
-                copyOfShops.sort(Comparator.comparingLong(Shop::getShopId).reversed()); //.reverse if you want descending order
+                if(SHOULD_RANDOMIZE){
+                    Collections.shuffle(copyOfShops);
+                } else {
+                    copyOfShops.sort(Comparator.comparingLong(Shop::getShopId).reversed());
+                }
+
             }
 
             for(Shop shop: copyOfShops){

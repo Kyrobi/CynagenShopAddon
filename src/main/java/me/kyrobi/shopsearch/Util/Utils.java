@@ -1,4 +1,4 @@
-package me.kyrobi.cynagenshopsearch.Util;
+package me.kyrobi.shopsearch.Util;
 
 import com.earth2me.essentials.Essentials;
 import com.ghostchu.quickshop.api.QuickShopAPI;
@@ -13,17 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.getInstance;
-import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.shopCommand;
+import static me.kyrobi.shopsearch.CynagenShopSearch.*;
 
 public class Utils {
 
@@ -83,77 +80,6 @@ public class Utils {
 
         itemMeta.setLore(lore);
 
-
-
-
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-
-        // Use NamespacedKeys to store each part of the Location
-        container.set(new NamespacedKey(getInstance(), "location_world"), PersistentDataType.STRING, loc.getWorld().getName());
-        container.set(new NamespacedKey(getInstance(), "location_x"), PersistentDataType.DOUBLE, loc.getX());
-        container.set(new NamespacedKey(getInstance(), "location_y"), PersistentDataType.DOUBLE, loc.getY());
-        container.set(new NamespacedKey(getInstance(), "location_z"), PersistentDataType.DOUBLE, loc.getZ());
-        container.set(new NamespacedKey(getInstance(), "location_yaw"), PersistentDataType.FLOAT, loc.getYaw());
-        container.set(new NamespacedKey(getInstance(), "location_pitch"), PersistentDataType.FLOAT, loc.getPitch());
-
-        item.setItemMeta(itemMeta);
-
-        return item;
-    }
-
-    public static ItemStack addDescriptionToService(Shop shop, String desc){
-        // IMPORTANT
-        // OR ELSE IT WILL BREAK ALL THE SHOPS
-        ItemStack originalItem = shop.getItem();
-        ItemStack item = new ItemStack(originalItem);
-
-        double price = shop.getPrice();
-        int stock = shop.getRemainingStock();
-        ShopType type = shop.getShopType();
-        String owner = shop.getOwner().getUsername();
-        Location loc = shop.getLocation();
-
-        String teleportMessage = ChatColor.GOLD + "Click to teleport to the shop!";
-
-        ItemMeta itemMeta = item.getItemMeta();
-
-        Essentials ess = getEssentialsAPI();
-
-        long playTime = Bukkit.getOfflinePlayer(shop.getOwner().getUniqueId()).getStatistic(Statistic.PLAY_ONE_MINUTE)/20;
-
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Description");
-        lore.add(ChatColor.GRAY + "------------");
-
-        lore.add(ChatColor.GRAY + "");
-
-        // lore.add(ChatColor.DARK_AQUA + desc);
-        int lineLength = 36;
-        for (int i = 0; i < desc.length(); i += lineLength) {
-            // Check if the remaining part is less than line length
-            if (i + lineLength < desc.length()) {
-                lore.add(ChatColor.DARK_AQUA + desc.substring(i, i + lineLength));
-            } else {
-                // Add the last part of the string
-                lore.add(ChatColor.DARK_AQUA + desc.substring(i));
-            }
-        }
-
-        lore.add(ChatColor.GRAY + "");
-        lore.add(ChatColor.GRAY + "------------");
-
-        long lastOnline = ess.getUser(shop.getOwner().getUniqueId()).getLastLogout();
-        lore.add(ChatColor.GRAY + "Name: " + ChatColor.WHITE + owner);
-        lore.add(ChatColor.GRAY + "Last online: " + ChatColor.WHITE + convertMilToHowLongAgo(lastOnline));
-        lore.add(ChatColor.GRAY + "Total playtime: " + ChatColor.WHITE + secondsToTimestamp(playTime));
-
-
-        lore.add(ChatColor.GRAY + "Location: " + ChatColor.WHITE + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ());
-        lore.add(" ");
-        lore.add(teleportMessage);
-
-        itemMeta.setLore(lore);
-        itemMeta.setDisplayName(ChatColor.GOLD + "Job Listing");
 
 
 
@@ -285,68 +211,7 @@ public class Utils {
     }
 
     public static List<String> getTutorialBookLore(ItemMeta meta){
-        List<String> lore = new ArrayList<>();
-
-        lore.add(ChatColor.AQUA + shopCommand);
-        lore.add(ChatColor.WHITE + "This will open the shop menu");
-        lore.add(ChatColor.WHITE + "and show all items.");
-
-        lore.add("");
-
-        lore.add(ChatColor.AQUA + shopCommand + " ENCHANTED_BOOK");
-        lore.add(ChatColor.WHITE + "This will find shops with");
-        lore.add(ChatColor.WHITE + "enchanted books.");
-
-        lore.add("");
-
-        lore.add(ChatColor.AQUA + shopCommand + " ENCHANTED_BOOK fortune");
-        lore.add(ChatColor.WHITE + "This will find shops with");
-        lore.add(ChatColor.WHITE + "enchanted books that contains");
-        lore.add(ChatColor.WHITE + "the text \"fortune\".");
-
-        lore.add("");
-
-        lore.add(ChatColor.AQUA + shopCommand + " voting item");
-        lore.add(ChatColor.WHITE + "This will find all items containing");
-        lore.add(ChatColor.WHITE + "the word \"voting item\".");
-
-        return lore;
-
-    }
-
-    public static List<String> getServiceLore(ItemMeta meta){
-        List<String> lore = new ArrayList<>();
-
-        lore.add(ChatColor.AQUA + "You can offer/request different");
-        lore.add(ChatColor.AQUA + "services like building, gathering,");
-        lore.add(ChatColor.AQUA + "terraforming, etc.");
-
-        lore.add("");
-
-        lore.add(ChatColor.AQUA + "To do this, simply set up a shop with");
-        lore.add(ChatColor.AQUA + "a paper that's renamed. Name the paper ");
-        lore.add(ChatColor.WHITE + "[Service] <description>");
-        lore.add(ChatColor.AQUA + "For example:");
-
-        lore.add("");
-
-        lore.add(ChatColor.WHITE + "[Service] I will help you gather all the");
-        lore.add(ChatColor.WHITE + "different types of flowers.");
-
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Note: You will need to set up your own");
-        lore.add(ChatColor.GRAY + "system for how players will contact");
-        lore.add(ChatColor.GRAY + "you. For example, buying an item and");
-        lore.add(ChatColor.GRAY + "putting it into a hopper, /mail, contact");
-        lore.add(ChatColor.GRAY + "on Discord, etc");
-
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Use /itemname if text is too long for anvil.");
-        lore.add(ChatColor.GRAY + "This list is sorted by last online.");
-
-        return lore;
+        return SHOP_GUIDE_INFO;
     }
 
     public static Essentials getEssentialsAPI(){

@@ -1,15 +1,10 @@
-name: CynagenShopAddon
+name: QuickshopSearchItem
 version: '1.0-SNAPSHOT'
-main: me.kyrobi.cynagenshopsearch.CynagenShopSearch
+main: me.kyrobi.shopsearch.CynagenShopSearch
 api-version: '1.21'
 depend:
   - QuickShop-Hikari
   - Essentials
-  - AdvancedRegionMarket
 commands:
   finditem:
     description: Opens up the shop menu
-  shopautobuy:
-    description: Automatically buys items from player shops.
-    permission: cynagenshopaddon.autobuy
-    permission-message: You do not have permission to use this command.

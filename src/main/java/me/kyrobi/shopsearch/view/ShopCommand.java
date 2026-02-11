@@ -1,5 +1,7 @@
-package me.kyrobi.cynagenshopsearch;
+package me.kyrobi.shopsearch.view;
 
+import me.kyrobi.shopsearch.CynagenShopSearch;
+import me.kyrobi.shopsearch.BuildInventory;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -27,13 +29,13 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         }
 
 
-        // System.out.println("Using command");
+        System.out.println("Using command");
         Player player = (Player) commandSender;
-        // System.out.println("For " + player.getName());
+        System.out.println("For " + player.getName());
 
-//        if(!player.getName().equals("Mokokotei")){
-//            return true;
-//        }
+        if(!player.getName().equals("Mokokotei")){
+            return true;
+        }
 
         BuildInventory buildInventory = new BuildInventory(plugin);
 
@@ -57,7 +59,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.GREEN + "Getting your items... this could take a moment");
         if(args.length >= 1){
 
-            if(Material.getMaterial(args[0].toUpperCase()) != null){
+            if(Material.getMaterial(args[0]) != null){
                 // If first argument is not null, find the item associated containing the meta
                 buildInventory.createInventory(player, BuildInventory.ShopMode.ALL, args[0], metaString);
             } else {
@@ -84,7 +86,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             for (Material material : Material.values()) {
                 String materialName = material.name();
                 // Add material name if it starts with the partial input
-                if (materialName.contains(partialInput.toUpperCase())) {
+                if (materialName.startsWith(partialInput)) {
                     completions.add(materialName);
                 }
             }

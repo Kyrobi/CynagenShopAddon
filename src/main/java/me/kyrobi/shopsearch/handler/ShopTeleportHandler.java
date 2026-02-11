@@ -1,4 +1,4 @@
-package me.kyrobi.cynagenshopsearch.handler;
+package me.kyrobi.shopsearch.handler;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.Trade;
@@ -13,8 +13,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.CompletableFuture;
 
-import static me.kyrobi.cynagenshopsearch.CynagenShopSearch.getInstance;
-import static me.kyrobi.cynagenshopsearch.Util.Utils.*;
+import static me.kyrobi.shopsearch.CynagenShopSearch.getInstance;
+import static me.kyrobi.shopsearch.Util.Utils.*;
 
 public class ShopTeleportHandler {
 

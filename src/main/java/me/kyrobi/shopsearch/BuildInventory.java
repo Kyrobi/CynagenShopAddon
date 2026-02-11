@@ -1,7 +1,6 @@
-package me.kyrobi.cynagenshopsearch;
+package me.kyrobi.shopsearch;
 
 import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.Trade;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
@@ -10,7 +9,6 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,8 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static me.kyrobi.cynagenshopsearch.Util.Utils.*;
-import static me.kyrobi.cynagenshopsearch.handler.ShopTeleportHandler.onItemClick;
+import static me.kyrobi.shopsearch.CynagenShopSearch.*;
+import static me.kyrobi.shopsearch.Util.Utils.*;
+import static me.kyrobi.shopsearch.handler.ShopTeleportHandler.onItemClick;
 
 public class BuildInventory {
 
@@ -80,7 +79,7 @@ public class BuildInventory {
     // Don't touch this unless you need to change the layout of the GUI
     private void ShowFinalGUI(Player player, List<ItemStack> items){
         // Create the main GUI with 6 rows
-        ChestGui gui = new ChestGui(6, "Cynagen's e🅱ay Listings");
+        ChestGui gui = new ChestGui(6, SHOP_TITLE);
 
         gui.setOnGlobalClick(inventoryClickEvent -> {
             inventoryClickEvent.setCancelled(true);
@@ -121,9 +120,9 @@ public class BuildInventory {
         StaticPane navigation = new StaticPane(0, 5, 9, 1);
 
         // Previous page button
-        ItemStack previousButton = new ItemStack(Material.ARROW);
+        ItemStack previousButton = new ItemStack(Material.getMaterial(PREVIOUS_PAGE_ITEM));
         ItemMeta previousMeta = previousButton.getItemMeta();
-        previousMeta.setDisplayName(ChatColor.GRAY + "Previous Page");
+        previousMeta.setDisplayName(PREVIOUS_PAGE_TEXT);
         previousButton.setItemMeta(previousMeta);
         navigation.addItem(new GuiItem(previousButton, event -> {
             event.setCancelled(true);
@@ -134,9 +133,9 @@ public class BuildInventory {
         }), 0, 0);
 
         // Next page button
-        ItemStack nextButton = new ItemStack(Material.ARROW);
+        ItemStack nextButton = new ItemStack(Material.getMaterial(NEXT_PAGE_ITEM));
         ItemMeta nextMeta = nextButton.getItemMeta();
-        nextMeta.setDisplayName(ChatColor.GRAY + "Next Page");
+        nextMeta.setDisplayName(NEXT_PAGE_TEXT);
         nextButton.setItemMeta(nextMeta);
         navigation.addItem(new GuiItem(nextButton, event -> {
             event.setCancelled(true);
@@ -150,20 +149,10 @@ public class BuildInventory {
 
         if (mode != ShopMode.SERVICES) {
             // Guide book
-            ItemStack guideBook = new ItemStack(Material.WRITABLE_BOOK);
+            ItemStack guideBook = new ItemStack(Material.getMaterial(SHOP_GUIDE_ITEM));
             ItemMeta guideMeta = guideBook.getItemMeta();
-            guideMeta.setDisplayName(ChatColor.GRAY + "Shop Guide");
+            guideMeta.setDisplayName(SHOP_GUIDE_TEXT);
             guideMeta.setLore(getTutorialBookLore(guideMeta));
-            guideBook.setItemMeta(guideMeta);
-            navigation.addItem(new GuiItem(guideBook, event -> {
-                event.setCancelled(true);
-            }), 4, 0);
-        } else {
-            // Guide book
-            ItemStack guideBook = new ItemStack(Material.IRON_PICKAXE);
-            ItemMeta guideMeta = guideBook.getItemMeta();
-            guideMeta.setDisplayName(ChatColor.GRAY + "Job Listing Guide");
-            guideMeta.setLore(getServiceLore(guideMeta));
             guideBook.setItemMeta(guideMeta);
             navigation.addItem(new GuiItem(guideBook, event -> {
                 event.setCancelled(true);
@@ -188,7 +177,7 @@ public class BuildInventory {
         if(mode == ShopMode.BUY){
             lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "-> " + "Buying Items");
         } else {
-            lore.add(ChatColor.GRAY + spacing + "Buying Items");
+            lore.add(ChatColor.GRAY + spacing + "Buying");
         }
 
         if(mode == ShopMode.SELL){
