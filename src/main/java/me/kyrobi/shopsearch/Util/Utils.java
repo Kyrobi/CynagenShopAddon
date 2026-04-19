@@ -18,13 +18,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static me.kyrobi.shopsearch.CynagenShopSearch.*;
 
 public class Utils {
 
-    public static ArrayList<UUID> entitiesToRemove = new ArrayList<>();
+    /*
+    FIX: Changed from ArrayList to CopyOnWriteArrayList for thread safety.
+    This list is modified from scheduled tasks and read during onDisable,
+    which can happen on different threads.
+     */
+    public static CopyOnWriteArrayList<UUID> entitiesToRemove = new CopyOnWriteArrayList<>();
     private static final int SAFE_RADIUS = 10;
 
     public static ItemStack addLoreToShopItem(Shop shop){
@@ -87,6 +93,13 @@ public class Utils {
 
         // Use NamespacedKeys to store each part of the Location
         container.set(new NamespacedKey(getInstance(), "location_world"), PersistentDataType.STRING, loc.getWorld().getName());
+
+        if(shop.getOwner().getUniqueId().toString().equals("164ae726-dd91-4137-8c8e-383a9ecf0713")){
+            container.set(new NamespacedKey(getInstance(), "owner"), PersistentDataType.STRING, ".Pekomart");
+        } else {
+            container.set(new NamespacedKey(getInstance(), "owner"), PersistentDataType.STRING, shop.getOwner().getUsername());
+        }
+
         container.set(new NamespacedKey(getInstance(), "location_x"), PersistentDataType.DOUBLE, loc.getX());
         container.set(new NamespacedKey(getInstance(), "location_y"), PersistentDataType.DOUBLE, loc.getY());
         container.set(new NamespacedKey(getInstance(), "location_z"), PersistentDataType.DOUBLE, loc.getZ());
@@ -121,24 +134,42 @@ public class Utils {
         return null; // Return null if data is incomplete or invalid
     }
 
+    public static String getUsernameFromItem(ItemStack item){
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+
+            // Retrieve each part of the Location
+            String owner = container.get(new NamespacedKey(getInstance(), "owner"), PersistentDataType.STRING);
+            return owner;
+        }
+        return null; // Return null if data is incomplete or invalid
+    }
+
     public static boolean doesItemContainStringInMeta(ItemStack item, String text){
 
         ItemMeta itemMeta = item.getItemMeta();
+        String lowerText = text.toLowerCase();
+
         if(itemMeta.hasLore()){
             for(String s: itemMeta.getLore()){
-                if(s.toLowerCase().contains(text.toLowerCase())){
+                if(s.toLowerCase().contains(lowerText)){
                     return true;
                 }
             }
         }
 
-        if(itemMeta.getAsString().contains(text.toLowerCase())){
+        /*
+        FIX: Lowercase BOTH sides for consistent case-insensitive matching.
+        getAsString() serializes the full NBT which allows deep searching
+        (e.g. enchantment names, custom NBT data), which is intentional.
+         */
+        if(itemMeta.getAsString().toLowerCase().contains(lowerText)){
             return true;
         }
 
-        // System.out.println("Display name: " + itemMeta.getDisplayName());
         String itemName = itemMeta.getDisplayName();
-        if(itemName.toLowerCase().contains(text.toLowerCase())){
+        if(itemName.toLowerCase().contains(lowerText)){
             return true;
         }
 

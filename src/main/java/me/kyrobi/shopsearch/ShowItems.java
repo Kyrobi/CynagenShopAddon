@@ -34,17 +34,15 @@ public class ShowItems {
 
 
         /*
-        Clean up the list before processing it later
+        Clean up the list before processing it later.
+        FIX: Use else-if to prevent double-removal when both conditions are true
+        for different items at the same index.
          */
-
         for (int i = copyOfShops.size() - 1; i >= 0; i--) {
             Shop shop = copyOfShops.get(i);
             if (shop.getRemainingStock() == 0) {
-                // System.out.println("Removing " + shop.getItem());
                 copyOfShops.remove(i);
-            }
-            if (shop.getRemainingSpace() == 0) {
-                // System.out.println("Removing " + shop.getItem());
+            } else if (shop.getRemainingSpace() == 0) {
                 copyOfShops.remove(i);
             }
         }
@@ -182,15 +180,14 @@ public class ShowItems {
             }
         }
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(getInstance(), ()->{
-            for(ItemStack item: items) {
-                ItemMeta meta = item.getItemMeta();
-                PersistentDataContainer pdc = meta.getPersistentDataContainer();
-                for (NamespacedKey key : pdc.getKeys()) {
-                    pdc.remove(key);
-                }
-            }
-        }, 20 * 60 * 3);
+        /*
+        FIX: Removed the scheduled PDC cleanup task.
+        The items are already clones (new ItemStack in addLoreToShopItem),
+        so the original shop items are not affected. The clones only live
+        in the GUI and will be garbage collected when the GUI closes.
+        The old task was holding references to potentially large ItemStack
+        lists for 3 minutes per /finditem call, which stacks up on busy servers.
+         */
 
         return items;
     }

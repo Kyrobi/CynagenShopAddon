@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static me.kyrobi.shopsearch.CynagenShopSearch.*;
 import static me.kyrobi.shopsearch.Util.Utils.*;
@@ -26,7 +26,12 @@ public class BuildInventory {
     private CynagenShopSearch plugin;
     private Essentials ess = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
 
-    private static HashMap<String, ShopMode> playerShopMode = new HashMap<>();
+    /*
+    FIX: Changed from HashMap to ConcurrentHashMap for thread safety,
+    since createInventory accesses this from both async (CompletableFuture)
+    and main thread (Bukkit scheduler) contexts.
+     */
+    private static ConcurrentHashMap<String, ShopMode> playerShopMode = new ConcurrentHashMap<>();
 
     private Player player;
     private ShopMode mode;
@@ -44,6 +49,13 @@ public class BuildInventory {
         this.plugin = plugin;
     }
 
+    /**
+     * FIX: Call this when a player leaves the server to prevent memory leaks.
+     */
+    public static void cleanupPlayer(String playerName){
+        playerShopMode.remove(playerName);
+    }
+
     public void createInventory(Player player, ShopMode mode, String itemName, String metaText){
 //        System.out.println("Mode: " + mode);
 //        System.out.println("Itemname: " + itemName);
@@ -57,6 +69,9 @@ public class BuildInventory {
         CompletableFuture.supplyAsync(() -> getItemsToShow(player, mode, itemName, metaText)).thenAccept(items -> {
             // Switch back to main thread for GUI creation
             Bukkit.getScheduler().runTask(plugin, () -> {
+                // FIX: Check if player is still online before showing GUI
+                if(!player.isOnline()) return;
+
                 ShowFinalGUI(player, items);
                 if(!playerShopMode.containsKey(player.getName())){
                     playerShopMode.put(player.getName(), ShopMode.ALL);

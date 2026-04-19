@@ -5,7 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,7 +18,7 @@ import java.util.UUID;
 
 import static me.kyrobi.shopsearch.Util.Utils.entitiesToRemove;
 
-public final class CynagenShopSearch extends JavaPlugin {
+public final class CynagenShopSearch extends JavaPlugin implements Listener {
 
     public static final String shopCommand = "/finditem";
     private static CynagenShopSearch instance;
@@ -44,6 +47,9 @@ public final class CynagenShopSearch extends JavaPlugin {
         instance = this;
 
         this.getCommand("finditem").setExecutor((CommandExecutor)new ShopCommand(this));
+
+        // FIX: Register this class as an event listener for player quit cleanup
+        Bukkit.getPluginManager().registerEvents(this, this);
 
         /*
         Regular text
@@ -81,6 +87,14 @@ public final class CynagenShopSearch extends JavaPlugin {
                 }
             }
         }
+    }
+
+    /**
+     * FIX: Clean up playerShopMode when a player leaves to prevent memory leak.
+     */
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        BuildInventory.cleanupPlayer(event.getPlayer().getName());
     }
 
     private String getConfigValueString(String node){
